@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 5efb3b76172df436eb7f63d3187e59a7
+timeCreated: 1516644778
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Keep on Truckin'FW
+  fontNames:
+  - Keep on Truckin'FW
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
