@@ -129,4 +129,37 @@ public class weirdAlYankovicScript : MonoBehaviour
             }
         }
     }
+
+    //twitch plays
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"Press 3 buttons using !{0} press <buttons>. (1 = top; 2 = middle; 3 = bottom.)";
+    #pragma warning restore 414
+    public KMSelectable[] ProcessTwitchCommand(string command)
+    {
+        if (command.Equals("press 123", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return new KMSelectable[] { Buttons[0], Buttons[1], Buttons[2] };
+        }
+        else if (command.Equals("press 132", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return new KMSelectable[] { Buttons[0], Buttons[2], Buttons[1] };
+        }
+        else if (command.Equals("press 213", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return new KMSelectable[] { Buttons[1], Buttons[0], Buttons[2] };
+        }
+        else if (command.Equals("press 231", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return new KMSelectable[] { Buttons[1], Buttons[2], Buttons[0] };
+        }
+        else if (command.Equals("press 312", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return new KMSelectable[] { Buttons[2], Buttons[0], Buttons[1] };
+        }
+        else if (command.Equals("press 321", StringComparison.InvariantCultureIgnoreCase))
+        {
+            return new KMSelectable[] { Buttons[2], Buttons[1], Buttons[0] };
+        }
+        return null;
+    }
 }
