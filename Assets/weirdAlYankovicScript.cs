@@ -4,24 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using KModkit;
+using System.Text.RegularExpressions;
 
 public class weirdAlYankovicScript : MonoBehaviour
 {
     public KMBombInfo Bomb;
     public KMAudio Audio;
+    public KMBombModule Module;
     public KMSelectable[] Buttons;
     public ContainedLyric[] buttonLyrics;
     public Material[] vinylMats;
     public AudioClip[] songs;
 
     private int songIndex = 0;
-    public String[] songOptions;
-    public String songName = "";
-    public String[] artistOptions;
-    public String artistName;
+    public string[] songOptions;
+    public string songName = "";
+    public string[] artistOptions;
+    public string artistName;
 
-    public String[] potentialLyrics;
-    public String[] chosenLyrics;
+    public string[] potentialLyrics;
+    public string[] chosenLyrics;
 
     public TextMesh[] lyricsText;
     public int[] lyricIndices = new int[3];
@@ -45,10 +47,15 @@ public class weirdAlYankovicScript : MonoBehaviour
         }
     }
 
-
     void Start()
     {
-        for(int i = 0; i <= 2; i++)
+        Generate();
+    }
+
+    void Generate()
+    {
+        
+        for (int i = 0; i <= 2; i++)
         {
             Buttons[i].GetComponent<Renderer>().material = vinylMats[0];
             buttonLyrics[i].pressed = false;
@@ -59,7 +66,7 @@ public class weirdAlYankovicScript : MonoBehaviour
 
     void PickSong()
     {
-        songIndex = UnityEngine.Random.Range(0,20);
+        songIndex = UnityEngine.Random.Range(0, 20);
         songName = songOptions[songIndex];
         artistName = artistOptions[songIndex];
         Debug.LogFormat("[Weird Al Yankovic #{0}] Your chosen song is {1} by Weird Al Yankovic.", moduleId, songName);
@@ -67,12 +74,12 @@ public class weirdAlYankovicScript : MonoBehaviour
 
     void PickLyrics()
     {
-        for(int i = 0; i <= 2; i++)
+        for (int i = 0; i <= 2; i++)
         {
-            int index = UnityEngine.Random.Range(0,6);
-            while(chosenIndices.Contains(index))
+            int index = UnityEngine.Random.Range(0, 6);
+            while (chosenIndices.Contains(index))
             {
-                index = UnityEngine.Random.Range(0,6);
+                index = UnityEngine.Random.Range(0, 6);
             }
             chosenIndices.Add(index);
 
@@ -89,14 +96,14 @@ public class weirdAlYankovicScript : MonoBehaviour
 
     void ButtonPress(KMSelectable pressedButton)
     {
-        if(moduleSolved || pressedButton.GetComponent<ContainedLyric>().pressed)
+        if (moduleSolved || pressedButton.GetComponent<ContainedLyric>().pressed)
         {
             return;
         }
         pressedButton.AddInteractionPunch();
         pressedButton.GetComponent<ContainedLyric>().pressed = true;
         pressedButton.GetComponent<Renderer>().material = vinylMats[1];
-        if(pressedButton.GetComponent<ContainedLyric>().containedLyric == chosenLyrics[stage])
+        if (pressedButton.GetComponent<ContainedLyric>().containedLyric == chosenLyrics[stage])
         {
             stage++;
             Debug.LogFormat("[Weird Al Yankovic #{0}] You pressed {1}. That is correct.", moduleId, pressedButton.GetComponent<ContainedLyric>().containedLyric);
@@ -107,15 +114,15 @@ public class weirdAlYankovicScript : MonoBehaviour
             stage++;
             incorrect = true;
         }
-        if(stage == 3)
+        if (stage == 3)
         {
-            if(incorrect)
+            if (incorrect)
             {
                 GetComponent<KMBombModule>().HandleStrike();
                 Debug.LogFormat("[Weird Al Yankovic #{0}] Strike! The order was not correct.", moduleId);
                 stage = 0;
                 incorrect = false;
-                Start();
+                Generate();
             }
             else
             {
@@ -126,41 +133,44 @@ public class weirdAlYankovicScript : MonoBehaviour
                 Audio.PlaySoundAtTransform("oldRecord", transform);
                 Audio.PlaySoundAtTransform(songs[songIndex].name, transform);
             }
-        } else {
+        }
+        else
+        {
             Audio.PlaySoundAtTransform("scratch", transform);
         }
     }
 
     //twitch plays
-    #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"Press 3 buttons using !{0} press <buttons>. (1 = top; 2 = middle; 3 = bottom.)";
-    #pragma warning restore 414
-    public KMSelectable[] ProcessTwitchCommand(string command)
+#pragma warning disable 414
+    private readonly string TwitchHelpMessage = "!{0} press 1 2 3 [Press buttons 1, 2, 3 (from top to bottom)]. | 'press' is optional.";
+#pragma warning restore 414
+
+    private IEnumerator ProcessTwitchCommand(string command)
     {
-        if (command.Equals("press 123", StringComparison.InvariantCultureIgnoreCase))
+        var m = Regex.Match(command, @"^\s*(?:press\s+|submit\s+)?([123 ]+)\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (!m.Success)
+            yield break;
+        var btns = m.Groups[1].Value.Where(ch => "123".Contains(ch)).Select(ch => Buttons["123".IndexOf(ch)]).ToArray();
+        if (btns.Length != 3 || btns.Distinct().Count() != 3)
+            yield break;
+        yield return null;
+        yield return btns;
+    }
+
+    private IEnumerator TwitchHandleForcedSolve()
+    {
+        if (incorrect)
         {
-            return new KMSelectable[] { Buttons[0], Buttons[1], Buttons[2] };
+            moduleSolved = true;
+            GetComponent<KMBombModule>().HandlePass();
+            // due to 2019 blan code, exish wins this time -Quinn Wuest
         }
-        else if (command.Equals("press 132", StringComparison.InvariantCultureIgnoreCase))
+        var solution = Buttons.Select(i => Array.IndexOf(chosenLyrics, i.GetComponent<ContainedLyric>().containedLyric)).ToArray();
+        for (int i = 0; i < 3; i++)
         {
-            return new KMSelectable[] { Buttons[0], Buttons[2], Buttons[1] };
+            Buttons[solution[i]].OnInteract();
+            yield return new WaitForSeconds(0.1f);
         }
-        else if (command.Equals("press 213", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return new KMSelectable[] { Buttons[1], Buttons[0], Buttons[2] };
-        }
-        else if (command.Equals("press 231", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return new KMSelectable[] { Buttons[1], Buttons[2], Buttons[0] };
-        }
-        else if (command.Equals("press 312", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return new KMSelectable[] { Buttons[2], Buttons[0], Buttons[1] };
-        }
-        else if (command.Equals("press 321", StringComparison.InvariantCultureIgnoreCase))
-        {
-            return new KMSelectable[] { Buttons[2], Buttons[1], Buttons[0] };
-        }
-        return null;
+        yield break;
     }
 }
