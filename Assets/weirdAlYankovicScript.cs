@@ -165,7 +165,7 @@ public class weirdAlYankovicScript : MonoBehaviour
             GetComponent<KMBombModule>().HandlePass();
             // due to 2019 blan code, exish wins this time -Quinn Wuest
         }
-        var solution = Buttons.Select(i => Array.IndexOf(chosenLyrics, i.GetComponent<ContainedLyric>().containedLyric)).ToArray();
+        var solution = chosenLyrics.Select(i => Array.IndexOf(Buttons.Select(j => j.GetComponent<ContainedLyric>().containedLyric).ToArray(), i)).ToArray();
         for (int i = 0; i < 3; i++)
         {
             Buttons[solution[i]].OnInteract();
