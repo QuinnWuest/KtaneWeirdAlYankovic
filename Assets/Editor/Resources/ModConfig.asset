@@ -13,16 +13,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: weirdAlYankovic
   title: Weird Al Yankovic
-  description: 'Are you White and Nerdy enough for this module?
-
-
-    Module ID: weirdAlYankovic
-
-
-    Created by: StKildaFan, Royal_Flu$h, Blananas2
-
-
-    Manual available here: https://ktane.timwi.de/HTML/Weird%20Al%20Yankovic.html'
-  version: 1.1
+  author: Blananas2
+  description: "Are you White and Nerdy enough for this module?\r\n\r\nModule ID:
+    weirdAlYankovic\r\n\r\nCreated by: StKildaFan, Royal_Flu$h, Blananas2\r\n\r\nManual
+    available here: https://ktane.timwi.de/HTML/Weird%20Al%20Yankovic.html"
+  version: 
   outputFolder: build
   previewImage: {fileID: 2800000, guid: afafd614bcb118c49ac9ff47d01a844a, type: 3}

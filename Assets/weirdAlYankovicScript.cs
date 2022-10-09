@@ -94,7 +94,6 @@ public class weirdAlYankovicScript : MonoBehaviour
             return;
         }
         pressedButton.AddInteractionPunch();
-        Audio.PlaySoundAtTransform("scratch", transform);
         pressedButton.GetComponent<ContainedLyric>().pressed = true;
         pressedButton.GetComponent<Renderer>().material = vinylMats[1];
         if(pressedButton.GetComponent<ContainedLyric>().containedLyric == chosenLyrics[stage])
@@ -127,6 +126,8 @@ public class weirdAlYankovicScript : MonoBehaviour
                 Audio.PlaySoundAtTransform("oldRecord", transform);
                 Audio.PlaySoundAtTransform(songs[songIndex].name, transform);
             }
+        } else {
+            Audio.PlaySoundAtTransform("scratch", transform);
         }
     }
 
